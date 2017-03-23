@@ -1,0 +1,42 @@
+CIS6930 Advanced Databases
+Name: Dinesh Ramamoorthy
+Uid: U51857354
+Netid: dramamoorthy
+
+Objective:
+
+To study and modify the PostgreSQL source code with a focus on one of the core modules- the buffer manager.
+To implement the Least Recently Used (LRU) buffer replacement policy by understanding and modifying the current
+code provided in PostgreSQL version 8.2.19, which comes with an implementation of the clock buffer replacement policy. 
+
+Files modified and attached:
+
+1. freelist.c
+2. buf_internals.h
+3. buf_init.c
+4. bufmgr.c
+
+Installation:
+
+The original files are replaced with the edited files and compiled and installed. Test implementaion has been done with 100
+buffer pages.
+Now the given queries are executed from the input file provided.
+
+Indication:
+
+The changes in code are indicated by comments besides them
+
+Description:
+
+LRU uses refcount only as the count variable and it doesnot use the usagecount which is used in clock algorithm. 
+A new variable is added to buf_internals.h to implement the linked list and point to a previous position buffer and the same is initaialised in 
+buf_init.c. Then this pointer is used to maintain a queue of buffers with a refcount0.
+
+elog lines of code are added in the freelist.c at strategygetbuffer and stratergyfreebuffer.with this we get an output whenever a free buffer is
+added to the queue. Then the other variable is used here to implement the linked list for LRU. Then the clock algorithm is identified and removed.
+
+The stratergyfreebuffer() acts to add buffer to the freelist and stratergygetbuffer() acts to get a buffer from the freelist. And the two pointers available here
+are updated accordingly to the pincount which is the refcount over here. The buffer when required is received from the head of the list.
+The page is updated with the refcount each and eveytime it is used and the refcount is updated. The present value of refcount is taken into account and updated with the new changes. Then if the refcount of a page is 0 then it is added to the freelist and the page that has been used least recently is bought to the memory. The requirement for the refcount to be 0 to match the LRU condition is taken care of in the buffer manager file.
+
+
